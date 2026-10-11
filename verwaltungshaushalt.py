@@ -1,44 +1,33 @@
+import json
+
 einnahme = []
 ausgabe = []
 
 def load_bookings():
     # load bookings out of bookings.txt
-    einnahme.clear()
-    ausgabe.clear()
-    section = None
     try:
-        with open("bookings.txt", "r") as datei:
-            for zeile in datei:
-                zeile = zeile.strip()
+        with open("bookings.json", "r", encoding="utf-8") as datei:
+            daten = json.load(datei)
 
-                if zeile == "input":
-                    section = "einnahme"
-                
-                elif zeile == "spendings":
-                    section = "ausgabe"
+            einnahme.clear()
+            ausgabe.clear()
 
-                elif section == "einnahme":
-                    betrag = float(zeile)
-                    einnahme.append(betrag)
-                elif section == "ausgabe":
-                    betrag = float(zeile)
-                    ausgabe.append(betrag)
+            einnahme.extend(daten["einnahme"])
+            ausgabe.extend(daten["ausgabe"])
+
     except FileNotFoundError:
-        print("Keine Save-Datei gefunden.")
+        print("Noch keine gespeicherten Buchungen vorhanden.")
 
 def safe_bookings():
-    with open("bookings.txt", "w") as datei:
-        datei.write("My Account Bookings\n")
 
-        datei.write("input\n")
-        if einnahme:
-            for betrag in einnahme:
-                datei.write(str(betrag)+ "\n")
-        
-        datei.write("spendings\n")
-        if ausgabe:
-            for betrag in ausgabe:
-                datei.write(str(betrag)+ "\n")
+    daten = {
+        "einnahme": einnahme,
+        "ausgabe": ausgabe
+    }
+
+    with open("bookings.json", "w", encoding="utf-8") as datei:
+        json.dump(daten, datei, indent=4, ensure_ascii=False)
+
     
 def add_amount():
     # Add an Amount to your Inputs
@@ -46,7 +35,13 @@ def add_amount():
         try:
             betrag = float(input("Einnahme hinzufügen (€): "))
             if betrag > 0:
-                return betrag
+                date= input("Datum (TT.MM.JJJJ): ")
+                description = input("Woher stammt die Einnahme? ")
+                return {
+                    "amount": betrag,
+                    "date": date,
+                    "description": description
+                } 
             else:
                 print("Betrag muss eine positive Zahl sein")
         except ValueError:
@@ -58,7 +53,12 @@ def add_spending():
         try:
             betrag = float(input("Ausgabe hinzufügen (€): "))
             if betrag > 0:
-                return betrag
+                date = input("Datum (TT.MM.JJJJ): ")
+                description = input("Wo ist das Geld hin? ")
+                return {"amount": betrag,
+                        "date" : date,
+                        "description": description
+                        }
             else:
                 print("Betrag muss eine positive Zahl sein")
         except ValueError:
@@ -71,21 +71,21 @@ def get_bookings():
     if einnahme:
         print("Einnahmen in €")
         for betrag in einnahme:
-            print(betrag)
+            print(f'{betrag["date"]} | {betrag["description"]}: {betrag["amount"]:.2f} €')
     else:
         print("Keine Einnahmen vorhanden")
 
     if ausgabe:
         print("Ausgaben in €")
-        for z_a in ausgabe:
-            print(z_a)
+        for betrag in ausgabe:
+            print(f'{betrag["date"]} | {betrag["description"]}: {betrag["amount"]:.2f} €')
     else:
         print("Keine Ausgaben vorhanden")
 
 def get_account_balance():
         # Get Account Balance out of input and spendings
-        sum_einnahmen = sum(einnahme)
-        sum_ausgaben = sum(ausgabe)
+        sum_einnahmen = sum( buchung["amount"] for buchung in einnahme)
+        sum_ausgaben = sum( buchung["amount"] for buchung in ausgabe)
         kontostand = sum_einnahmen - sum_ausgaben
         print(f"Ihr Kontostand liegt bei: {kontostand:.2f} €")
 
@@ -97,13 +97,16 @@ print("3. Buchungen anzeigen")
 print("4. Kontostand anzeigen")
 print("5. Programm beenden")
 
+load_bookings()
+
 while True:
-    load_bookings()
+
     aktion = input("Was wollen Sie machen? Bitte geben Sie eine Zahl von 1-5 an ")
 
     if aktion == "1":
-        amount = add_amount()
-        einnahme.append(amount)
+        col_amount = add_amount()
+        einnahme.append(col_amount)
+        print(einnahme)
     elif aktion == "2":
         spending = add_spending()
         ausgabe.append(spending)
