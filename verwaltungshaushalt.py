@@ -181,37 +181,37 @@ def get_category(booking_type):
         print("Keine passende Kategorie hinzugefügt.")
         return None
 
+def start():
+    print("Mein Verwaltungshausbuch")
+    print("1. Einnahmen hinzufügen")
+    print("2. Ausgaben hinzufügen")
+    print("3. Buchungen anzeigen")
+    print("4. Kontostand anzeigen")
+    print("5. Kategorien bearbeiten")
+    print("6. Programm beenden")
 
-print("Mein Verwaltungshausbuch")
-print("1. Einnahmen hinzufügen")
-print("2. Ausgaben hinzufügen")
-print("3. Buchungen anzeigen")
-print("4. Kontostand anzeigen")
-print("5. Kategorien bearbeiten")
-print("6. Programm beenden")
+    load_bookings()
 
-load_bookings()
+    while True:
 
-while True:
+        aktion = input("Was wollen Sie machen? Bitte geben Sie eine Zahl von 1-6 an ")
 
-    aktion = input("Was wollen Sie machen? Bitte geben Sie eine Zahl von 1-6 an ")
-
-    if aktion == "1":
-        col_amount = add_amount()
-        einnahme.append(col_amount)
-        print(einnahme)
-    elif aktion == "2":
-        spending = add_spending()
-        ausgabe.append(spending)
-    elif aktion == "3":
-        get_bookings()
-    elif aktion == "4":
-        get_account_balance()
-    elif aktion == "5":
-        get_all_category()
-    elif aktion == "6":
-        print("Benutzer möchte das Programm beenden")
-        safe_bookings()
-        break
-    else:
-        print("Ungültige Auswahl - Keine Konkrete Auswahl angegeben")
+        if aktion == "1":
+            col_amount = add_amount()
+            einnahme.append(col_amount)
+            print(einnahme)
+        elif aktion == "2":
+            spending = add_spending()
+            ausgabe.append(spending)
+        elif aktion == "3":
+            get_bookings()
+        elif aktion == "4":
+            get_account_balance()
+        elif aktion == "5":
+            get_all_category()
+        elif aktion == "6":
+            print("Benutzer möchte das Programm beenden")
+            safe_bookings()
+            break
+        else:
+            print("Ungültige Auswahl - Keine Konkrete Auswahl angegeben")
